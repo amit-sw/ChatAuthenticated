@@ -129,6 +129,33 @@ def is_authenticated() -> bool:
     return "supabase_session" in st.session_state
 
 
+def show_login_screen(client: Client, redirect_url: str) -> None:
+    st.header("Supabase + Google Login")
+    st.write("Sign in to unlock the rest of the app.")
+
+    try:
+        login_url = build_google_login_url(client, redirect_url)
+    except Exception as exc:  # pragma: no cover - surfacing Supabase config issues
+        st.error(f"Unable to create Google login link: {exc}")
+        return
+
+    st.link_button("Continue with Google", url=login_url, type="primary")
+    st.caption("The button opens the Supabase hosted Google consent screen.")
+    
+def try_login(callback_function) -> None:
+
+    try:
+        client, config = init_supabase_google_auth()
+    except SupabaseAuthConfigError as exc:
+        st.error(str(exc))
+        st.stop()
+
+    if is_authenticated():
+        callback_function(client)
+    else:
+        show_login_screen(client, config.redirect_url)
+
+
 def logout_user(client: Client) -> None:
     try:
         client.auth.sign_out()
@@ -144,5 +171,6 @@ __all__ = [
     "get_session",
     "init_supabase_google_auth",
     "is_authenticated",
+    "show_login_screen",
     "logout_user",
 ]
