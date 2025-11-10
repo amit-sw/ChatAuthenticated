@@ -1,3 +1,8 @@
 streamlit
 supabase
 
+langsmith
+langchain-core
+langchain-openai
+openai
+langchain-community

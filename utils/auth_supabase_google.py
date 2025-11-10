@@ -162,6 +162,7 @@ def logout_user(client: Client) -> None:
     finally:
         st.session_state.pop("supabase_session", None)
         st.query_params.clear()
+        st.rerun()
 
 
 __all__ = [
